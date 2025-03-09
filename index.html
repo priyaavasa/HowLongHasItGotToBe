@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HowLongHasItGotToBe</title>
+    <style>
+        :root {
+            --bg-color: #0a0a1a;
+            --text-color: #ffffff;
+            --accent-color: #9c27b0;
+            --card-bg: #111133;
+            --input-bg: #1a1a40;
+            --star-color: #ffffff;
+            --planet-color: #3498db;
+            --orbit-color: rgba(156, 39, 176, 0.3);
+            --moon-color: #aaaaaa;
+            --saturn-ring: #b19cd9;
+        }
+        
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+            background: linear-gradient(to bottom, #0a0a1a, #1a1a40);
+            position: relative;
+        }
+        
+        /* Stars background */
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        .star {
+            position: absolute;
+            background-color: var(--star-color);
+            border-radius: 50%;
+            animation: twinkle 4s infinite;
+        }
+        
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.2; }
+            50% { opacity: 1; }
+        }
+        
+        .container {
+            width: 90%;
+            max-width: 800px;
+            text-align: center;
+            z-index: 1;
+        }
+        
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            margin-bottom: 32px;
+            border: 1px solid rgba(156, 39, 176, 0.3);
+            backdrop-filter: blur(5px);
+        }
+        
+        h1, h2 {
+            margin-top: 0;
+            color: var(--accent-color);
+            font-size: 2.5rem;
+            text-shadow: 0 0 10px rgba(156, 39, 176, 0.5);
+        }
+        
+        h2 {
+            font-size: 2rem;
+        }
+        
+        input {
+            background-color: var(--input-bg);
+            border: none;
+            border-radius: 8px;
+            color: var(--text-color);
+            font-size: 1.2rem;
+            padding: 12px 20px;
+            margin-right: 10px;
+            width: 120px;
+            text-align: center;
+            box-shadow: 0 0 10px rgba(156, 39, 176, 0.3);
+        }
+        
+        button {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 24px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 0 15px rgba(156, 39, 176, 0.5);
+        }
+        
+        button:hover {
+            background-color: #7b1fa2;
+            transform: translateY(-2px);
+            box-shadow: 0 0 20px rgba(156, 39, 176, 0.8);
+        }
+        
+        .clock {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 40px 0;
+            position: relative;
+            height: 300px;
+        }
+        
+        /* Space clock */
+        .space-clock {
+            position: relative;
+            width: 280px;
+            height: 280px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #1a1a4a 0%, #0a0a1a 100%);
+            box-shadow: 0 0 30px rgba(156, 39, 176, 0.5), inset 0 0 50px rgba(0, 0, 0, 0.8);
+            overflow: hidden;
+        }
+        
+        /* Orbits */
+        .orbit {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            border-radius: 50%;
+            border: 1px solid var(--orbit-color);
+            transform: translate(-50%, -50%);
+        }
+        
+        .orbit-1 {
+            width: 60px;
+            height: 60px;
+        }
+        
+        .orbit-2 {
+            width: 120px;
+            height: 120px;
+        }
+        
+        .orbit-3 {
+            width: 180px;
+            height: 180px;
+        }
+        
+        .orbit-4 {
+            width: 240px;
+            height: 240px;
+        }
+        
+        /* Sun at the center */
+        .sun {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 30px;
+            height: 30px;
+            background: radial-gradient(circle, #ff9500, #ff5e00);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 0 20px #ff9500;
+            z-index: 2;
+        }
+        
+        /* Planets */
+        .planet {
+            position: absolute;
+            border-radius: 50%;
+            transform-origin: center;
+            z-index: 3;
+        }
+        
+        .mercury {
+            width: 8px;
+            height: 8px;
+            background-color: #aaa;
+            box-shadow: 0 0 5px #aaa;
+            top: calc(50% - 4px);
+            left: calc(50% - 4px + 30px);
+            animation: orbit 2s linear infinite;
+        }
+        
+        .venus {
+            width: 10px;
+            height: 10px;
+            background-color: #e67e22;
+            box-shadow: 0 0 5px #e67e22;
+            top: calc(50% - 5px);
+            left: calc(50% - 5px + 60px);
+            animation: orbit 5s linear infinite;
+        }
+        
+        .earth {
+            width: 12px;
+            height: 12px;
+            background-color: #3498db;
+            box-shadow: 0 0 5px #3498db;
+            top: calc(50% - 6px);
+            left: calc(50% - 6px + 90px);
+            animation: orbit 10s linear infinite;
+        }
+        
+        .mars {
+            width: 10px;
+            height: 10px;
+            background-color: #e74c3c;
+            box-shadow: 0 0 5px #e74c3c;
+            top: calc(50% - 5px);
+            left: calc(50% - 5px + 120px);
+            animation: orbit 15s linear infinite;
+        }
+        
+        /* Saturn with rings */
+        .saturn-system {
+            position: absolute;
+            top: calc(50% - 7px);
+            left: calc(50% - 7px + 140px);
+            animation: orbit 20s linear infinite;
+            z-index: 3;
+        }
+        
+        .saturn {
+            width: 14px;
+            height: 14px;
+            background-color: #f1c40f;
+            box-shadow: 0 0 5px #f1c40f;
+            border-radius: 50%;
+        }
+        
+        .saturn-rings {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 30px;
+            height: 4px;
+            background-color: var(--saturn-ring);
+            border-radius: 50%;
+            transform: translate(-50%, -50%) rotate(20deg);
+        }
+        
+        /* Second hand as comet */
+        .second-comet {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 120px;
+            height: 2px;
+            background: linear-gradient(to right, transparent, rgba(156, 39, 176, 1));
+            transform-origin: left center;
+            z-index: 4;
+        }
+        
+        .comet-head {
+            position: absolute;
+            top: 50%;
+            right: 0;
+            width: 6px;
+            height: 6px;
+            background-color: white;
+            border-radius: 50%;
+            transform: translate(0, -50%);
+            box-shadow: 0 0 10px white, 0 0 20px var(--accent-color);
+        }
+        
+        /* Minute hand as satellite */
+        .minute-satellite {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 90px;
+            height: 2px;
+            background-color: rgba(255, 255, 255, 0.7);
+            transform-origin: left center;
+            z-index: 4;
+        }
+        
+        .satellite {
+            position: absolute;
+            top: 50%;
+            right: 0;
+            width: 8px;
+            height: 4px;
+            background-color: #95a5a6;
+            border-radius: 2px;
+            transform: translate(0, -50%);
+            box-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+        }
+        
+        /* Hour hand as UFO */
+        .hour-ufo {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 60px;
+            height: 2px;
+            background-color: rgba(255, 255, 255, 0.5);
+            transform-origin: left center;
+            z-index: 4;
+        }
+        
+        .ufo {
+            position: absolute;
+            top: 50%;
+            right: 0;
+            width: 12px;
+            height: 5px;
+            background-color: #2ecc71;
+            border-radius: 50%;
+            transform: translate(0, -50%);
+            box-shadow: 0 0 10px #2ecc71;
+        }
+        
+        @keyframes orbit {
+            from { transform: rotate(0deg) translateX(0) rotate(0deg); }
+            to { transform: rotate(360deg) translateX(0) rotate(-360deg); }
+        }
+        
+        .digital-time {
+            font-size: 1.5rem;
+            font-family: 'Courier New', monospace;
+            background-color: rgba(26, 26, 64, 0.7);
+            padding: 10px 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            box-shadow: 0 0 10px rgba(156, 39, 176, 0.3);
+            border: 1px solid rgba(156, 39, 176, 0.5);
+            display: inline-block;
+            color: #9c27b0;
+            text-shadow: 0 0 5px rgba(156, 39, 176, 0.5);
+        }
+        
+        /* Improved Countdown UI */
+        .countdown-container {
+            position: relative;
+            margin-top: 30px;
+        }
+        
+        .countdown-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            grid-gap: 15px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .countdown-unit {
+            background-color: rgba(26, 26, 64, 0.8);
+            border-radius: 12px;
+            padding: 15px 10px;
+            box-shadow: 0 0 20px rgba(156, 39, 176, 0.4);
+            border: 1px solid rgba(156, 39, 176, 0.5);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .countdown-unit::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, rgba(156, 39, 176, 0.3) 0%, transparent 70%);
+            opacity: 0.7;
+            z-index: 0;
+        }
+        
+        .countdown-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: white;
+            margin: 0;
+            position: relative;
+            z-index: 1;
+            text-shadow: 0 0 10px rgba(156, 39, 176, 0.7);
+        }
+        
+        .countdown-label {
+            font-size: 0.9rem;
+            color: #ccc;
+            margin-top: 5px;
+            position: relative;
+            z-index: 1;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .target-year-display {
+            font-size: 2.5rem;
+            color: var(--accent-color);
+            margin: 20px 0;
+            text-shadow: 0 0 15px rgba(156, 39, 176, 0.7);
+            font-weight: bold;
+        }
+        
+        .input-container {
+            background-color: rgba(26, 26, 64, 0.7);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(156, 39, 176, 0.3);
+            border: 1px solid rgba(156, 39, 176, 0.5);
+            display: inline-block;
+            margin-top: 20px;
+        }
+        
+        .input-title {
+            margin-top: 0;
+            margin-bottom: 20px;
+            color: var(--accent-color);
+            font-size: 1.3rem;
+            text-shadow: 0 0 5px rgba(156, 39, 176, 0.5);
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        /* Cosmic particles */
+        .particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            pointer-events: none;
+        }
+        
+        .particle {
+            position: absolute;
+            background-color: white;
+            border-radius: 50%;
+            opacity: 0;
+            animation: float 15s linear infinite;
+        }
+        
+        @keyframes float {
+            0% {
+                opacity: 0;
+                transform: translateY(0) translateX(0);
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-100vh) translateX(50px);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .countdown-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            
+            .countdown-grid > *:nth-child(1) {
+                grid-column: 1 / span 3;
+            }
+            
+            .countdown-value {
+                font-size: 1.8rem;
+            }
+            
+            .space-clock {
+                width: 220px;
+                height: 220px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .countdown-grid {
+                grid-template-columns: repeat(2, 1fr);
+                grid-gap: 10px;
+            }
+            
+            .countdown-grid > *:nth-child(1) {
+                grid-column: 1 / span 2;
+            }
+            
+            .countdown-value {
+                font-size: 1.5rem;
+            }
+            
+            .countdown-label {
+                font-size: 0.8rem;
+            }
+            
+            .space-clock {
+                width: 200px;
+                height: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="stars" id="stars"></div>
+    <div class="particles" id="particles"></div>
+    
+    <div class="container">
+        <div class="card">
+            <h1>Your dreams are just few days away.</h1>
+            
+            <div id="input-section">
+                <div class="input-container">
+                    <h3 class="input-title">Enter your destination in year:</h3>
+                    <input type="number" id="year-input" min="2025" placeholder="Year">
+                    <button id="start-btn">Begin Journey</button>
+                </div>
+            </div>
+            
+            <div id="countdown-section" class="hidden">
+                <div class="target-year-display">Journey to <span id="target-year-display">2030</span></div>
+                
+                <div class="countdown-container">
+                    <div class="countdown-grid">
+                        <div class="countdown-unit">
+                            <div class="countdown-value" id="years">0</div>
+                            <div class="countdown-label">Years</div>
+                        </div>
+                        <div class="countdown-unit">
+                            <div class="countdown-value" id="months">0</div>
+                            <div class="countdown-label">Months</div>
+                        </div>
+                        <div class="countdown-unit">
+                            <div class="countdown-value" id="days">0</div>
+                            <div class="countdown-label">Days</div>
+                        </div>
+                        <div class="countdown-unit">
+                            <div class="countdown-value" id="hours">0</div>
+                            <div class="countdown-label">Hours</div>
+                        </div>
+                        <div class="countdown-unit">
+                            <div class="countdown-value" id="minutes">0</div>
+                            <div class="countdown-label">Minutes</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <button id="reset-btn" style="margin-top: 30px;">Reset Journey</button>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h2>Samay</h2>
+            <div class="clock">
+                <div class="space-clock">
+                    <!-- Orbits -->
+                    <div class="orbit orbit-1"></div>
+                    <div class="orbit orbit-2"></div>
+                    <div class="orbit orbit-3"></div>
+                    <div class="orbit orbit-4"></div>
+                    
+                    <!-- Sun -->
+                    <div class="sun"></div>
+                    
+                    <!-- Planets -->
+                    <div class="planet mercury"></div>
+                    <div class="planet venus"></div>
+                    <div class="planet earth"></div>
+                    <div class="planet mars"></div>
+                    
+                    <!-- Saturn with rings -->
+                    <div class="saturn-system">
+                        <div class="saturn"></div>
+                        <div class="saturn-rings"></div>
+                    </div>
+                    
+                    <!-- Clock hands -->
+                    <div class="hour-ufo" id="hour-hand">
+                        <div class="ufo"></div>
+                    </div>
+                    <div class="minute-satellite" id="minute-hand">
+                        <div class="satellite"></div>
+                    </div>
+                    <div class="second-comet" id="second-hand">
+                        <div class="comet-head"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="digital-time" id="digital-clock">00:00:00</div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const yearInput = document.getElementById('year-input');
+            const startBtn = document.getElementById('start-btn');
+            const resetBtn = document.getElementById('reset-btn');
+            const inputSection = document.getElementById('input-section');
+            const countdownSection = document.getElementById('countdown-section');
+            const targetYearDisplay = document.getElementById('target-year-display');
+            
+            const yearsEl = document.getElementById('years');
+            const monthsEl = document.getElementById('months');
+            const daysEl = document.getElementById('days');
+            const hoursEl = document.getElementById('hours');
+            const minutesEl = document.getElementById('minutes');
+            
+            const hourHand = document.getElementById('hour-hand');
+            const minuteHand = document.getElementById('minute-hand');
+            const secondHand = document.getElementById('second-hand');
+            const digitalClock = document.getElementById('digital-clock');
+            
+            // Create stars
+            const starsContainer = document.getElementById('stars');
+            for (let i = 0; i < 200; i++) {
+                const star = document.createElement('div');
+                star.classList.add('star');
+                
+                // Random position
+                const x = Math.random() * 100;
+                const y = Math.random() * 100;
+                
+                // Random size
+                const size = Math.random() * 3;
+                
+                // Random animation delay
+                const delay = Math.random() * 4;
+                
+                star.style.left = `${x}%`;
+                star.style.top = `${y}%`;
+                star.style.width = `${size}px`;
+                star.style.height = `${size}px`;
+                star.style.animationDelay = `${delay}s`;
+                
+                starsContainer.appendChild(star);
+            }
+            
+            // Create floating particles
+            const particlesContainer = document.getElementById('particles');
+            for (let i = 0; i < 30; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                
+                // Random position
+                const x = Math.random() * 100;
+                const y = Math.random() * 100 + 100;
+                
+                // Random size
+                const size = Math.random() * 2 + 1;
+                
+                // Random animation delay
+                const delay = Math.random() * 15;
+                const duration = Math.random() * 10 + 10;
+                
+                particle.style.left = `${x}%`;
+                particle.style.top = `${y}%`;
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                particle.style.animationDelay = `${delay}s`;
+                particle.style.animationDuration = `${duration}s`;
+                
+                particlesContainer.appendChild(particle);
+            }
+            
+            // Set current year as minimum for input
+            const currentYear = new Date().getFullYear();
+            yearInput.min = currentYear;
+            yearInput.placeholder = `Year (≥ ${currentYear})`;
+            
+            let countdownInterval;
+            let targetYear;
+            
+            // Update clock
+            function updateClock() {
+                const now = new Date();
+                const hours = now.getHours();
+                const minutes = now.getMinutes();
+                const seconds = now.getSeconds();
+                
+                const hourDeg = (hours % 12) * 30 + minutes * 0.5;
+                const minuteDeg = minutes * 6 + seconds * 0.1;
+                const secondDeg = seconds * 6;
+                
+                hourHand.style.transform = `rotate(${hourDeg}deg)`;
+                minuteHand.style.transform = `rotate(${minuteDeg}deg)`;
+                secondHand.style.transform = `rotate(${secondDeg}deg)`;
+                
+                digitalClock.textContent = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            }
+            
+            // Update countdown - Fixed calculation logic
+            function updateCountdown() {
+                const now = new Date();
+                const targetDate = new Date(targetYear, 0, 1); // January 1st of target year
+                
+                // Calculate time difference in milliseconds
+                const diff = targetDate.getTime() - now.getTime();
+                
+                if (diff <= 0) {
+                    clearInterval(countdownInterval);
+                    yearsEl.textContent = '0';
+                    monthsEl.textContent = '0';
+                    daysEl.textContent = '0';
+                    hoursEl.textContent = '0';
+                    minutesEl.textContent = '0';
+                    return;
+                }
+                
+                // More accurate time calculations
+                const millisecondsInSecond = 1000;
+                const millisecondsInMinute = millisecondsInSecond * 60;
+                const millisecondsInHour = millisecondsInMinute * 60;
+                const millisecondsInDay = millisecondsInHour * 24;
+                
+                // Calculate total days first
+                const totalDays = Math.floor(diff / millisecondsInDay);
+                
+                // Calculate years (roughly)
+                const years = Math.floor(totalDays / 365);
+                
+                // Calculate months (roughly - using 30 days for simplicity)
+                const remainingDaysAfterYears = totalDays - (years * 365);
+                const months = Math.floor(remainingDaysAfterYears / 30);
+                
+                // Calculate days left after months
+                const days = remainingDaysAfterYears - (months * 30);
+                
+                // Calculate hours, minutes
+                const hours = Math.floor((diff % millisecondsInDay) / millisecondsInHour);
+                const minutes = Math.floor((diff % millisecondsInHour) / millisecondsInMinute);
+                
+                // Update elements
+                yearsEl.textContent = years;
+                monthsEl.textContent = months;
+                daysEl.textContent = days;
+                hoursEl.textContent = hours;
+                minutesEl.textContent = minutes;
+            }
+            
+            // Start countdown
+            startBtn.addEventListener('click', function() {
+                const inputYear = parseInt(yearInput.value);
+                
+                if (!inputYear || inputYear < currentYear) {
+                    alert(`Please enter a valid year (${currentYear} or later)`);
+                    return;
+                }
+                
+                targetYear = inputYear;
+                targetYearDisplay.textContent = targetYear;
+                
+                inputSection.classList.add('hidden');
+                countdownSection.classList.remove('hidden');
+                
+                // Initial update
+                updateCountdown();
+                
+                // Set interval for countdown
+                countdownInterval = setInterval(updateCountdown, 1000);
+            });
+            
+            // Reset countdown
+            resetBtn.addEventListener('click', function() {
+                clearInterval(countdownInterval);
+                yearInput.value = '';
+                
+                countdownSection.classList.add('hidden');
+                inputSection.classList.remove('hidden');
+            });
+            
+            // Initialize clock
+            updateClock();
+            setInterval(updateClock, 1000);
+        });
+    </script>
+</body>
+</html>
